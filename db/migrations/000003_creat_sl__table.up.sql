@@ -1,0 +1,7 @@
+CREATE TABLE sl (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(64) NOT NULL UNIQUE,
+    title VARCHAR(64) NOT NULL UNIQUE,
+    is_detailable BOOLEAN NOT NULL,
+    version INT NOT NULL DEFAULT 1
+);
