@@ -85,7 +85,15 @@ func updateItem(r *vrequest.VoucherUpdateRequest) error {
 	}
 	return nil
 }
+func deleteVoucherItem(r *vrequest.VoucherUpdateRequest) error {
+	for _, item := range r.Items.Deleted {
+		if err := delete.DeleteVoucherItemsByIdAndVoucherID(r.Voucher.ID, item); err != nil {
+			return err
+		}
+	}
 
+	return nil
+}
 func GetVoucherByID(id uint) (*dto.Voucherdto, error) {
 	var voucher models.Voucher
 	if err := get.GetRecordByID(id, &voucher); err != nil {
@@ -116,12 +124,4 @@ func DeleteVoucherWithVersion(req vrequest.VoucherDeleteRequest) (string,error) 
 	
 	return "successful voucher record delete request",nil
 }
-func deleteVoucherItem(r *vrequest.VoucherUpdateRequest) error {
-	for _, item := range r.Items.Deleted {
-		if err := delete.DeleteVoucherItemsByIdAndVoucherID(r.Voucher.ID, item); err != nil {
-			return err
-		}
-	}
 
-	return nil
-}

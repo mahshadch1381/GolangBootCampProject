@@ -7,7 +7,7 @@ import (
 	"finalproject/db/queries/sum"
 	"finalproject/internal/models"
 	"finalproject/internal/validation"
-	"fmt"
+	
 )
 
 type VoucherItemUpdate struct {
@@ -67,10 +67,10 @@ func (r *VoucherUpdateRequest) ValidateCountOfItems() error {
 	if err != nil {
 		return err
 	}
-	if (counter + int64(len(r.Items.Inserted))) > 500 {
+	if (counter + int64(len(r.Items.Inserted))) - int64(len(r.Items.Deleted))> 500 {
 		return errors.New("we cant insert your items.bcz we should have at most 500 items")
 	}
-	if (counter - int64(len(r.Items.Deleted))) < 2 {
+	if (counter + int64(len(r.Items.Inserted)))- int64(len(r.Items.Deleted)) < 2 {
 		return errors.New("we cant delete your items.bcz we should have at leat 2 items")
 	}
 	return nil
@@ -81,7 +81,7 @@ func (r *VoucherUpdateRequest) ValidateItemsOfInserted() (*int , *int ,error) {
 		if !((item.Debit > 0 && item.Credit == 0) || (item.Debit == 0 && item.Credit > 0)) {
 			return nil,nil,errors.New("each item must have either debit or credit greater than 0, and the other 0 ")
 		}
-		fmt.Println(item.DLID, item.SLID)
+		
 		if err := CheckRefrences(item.DLID, item.SLID); err != nil {
 			return  nil,nil,err
 		}
@@ -109,7 +109,7 @@ func (r *VoucherUpdateRequest) ValidateItemsOfUpdated(debits *int,credits *int) 
 
 func CheckRefrences(dl_id *uint, sl_id uint) error {
 	if sl_id == 0 {
-		return errors.New("SL field in voucher items should not be empty")
+		return errors.New("sL field in voucher items should not be empty")
 	}
 	var sl models.SL
 	if err := get.GetRecordByID(sl_id, &sl); err != nil {

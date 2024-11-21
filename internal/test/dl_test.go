@@ -72,15 +72,15 @@ func TestCreateDl(t *testing.T) {
 func TestGetDl(t *testing.T) {
 	t.Run("DL Getting", func(t *testing.T) {
 		t.Run("should not allow get dl that doesnt exist", func(t *testing.T) {
-			str, err := services.GetDLByID(2000)
-			fmt.Println(err.Error())
+			str, err := services.GetDLByID(20000)
+			fmt.Println("t1 : "+err.Error())
 			assert.NotNil(t, err, "expected error for duplicate code")
 			assert.Empty(t, str)
 		})
 
 		t.Run("get dl successfully", func(t *testing.T) {
 			dl, err := services.GetDLByID(1)
-			fmt.Printf("this is dl you want: dl.code=%v, dl.title=%v, dl.version=%v \n", dl.Code, dl.Title, dl.Version)
+			fmt.Printf("t2 : "+"this is dl you want: dl.code=%v, dl.title=%v, dl.version=%v \n", dl.Code, dl.Title, dl.Version)
 			assert.Nil(t, err, "expected error for duplicate code")
 			assert.NotEmpty(t, dl)
 		})
@@ -93,7 +93,7 @@ func TestDeleteDl(t *testing.T) {
 		t.Run("should not allow delete dl that doesnt exist", func(t *testing.T) {
 			req := dlrequest.DlDeleteRequest{ID: 20000, Version: 1}
 			str, err := services.DeleteDLWithVersion(req)
-			fmt.Println(err.Error())
+			fmt.Println("t3 : "+err.Error())
 			assert.NotNil(t, err, "expected error for not found")
 			assert.Empty(t, str)
 		})
@@ -105,7 +105,7 @@ func TestDeleteDl(t *testing.T) {
 			id, _ := get.GetLastID("dl")
 			req := dlrequest.DlDeleteRequest{ID: id, Version: 1}
 			str, err := services.DeleteDLWithVersion(req)
-			fmt.Println(str)
+			fmt.Println("t4 : "+str)
 			assert.Nil(t, err)
 			assert.NotEmpty(t, str)
 		})
@@ -114,7 +114,7 @@ func TestDeleteDl(t *testing.T) {
 
 }
 func TestUpdateDl(t *testing.T) {
-	db.InitDB()
+
 	t.Run("DL Update", func(t *testing.T) {
 		code1 := helper.GenerateNumericString()
 		code2 := helper.GenerateNumericString() + "0"
@@ -133,7 +133,7 @@ func TestUpdateDl(t *testing.T) {
 		t.Run("should not allow Update with  duplicate code", func(t *testing.T) {
 			req := dlrequest.DlUpdateRequest{ID: id1, Code: code2, Title: title1, Version: 1}
 			str, err := services.Updatedl(req)
-			fmt.Println(err.Error())
+			fmt.Println("t6 : "+err.Error())
 			assert.NotNil(t, err)
 			assert.Empty(t, str)
 
@@ -141,7 +141,7 @@ func TestUpdateDl(t *testing.T) {
 		t.Run("should not allow Update with  empty code", func(t *testing.T) {
 			req := dlrequest.DlUpdateRequest{ID: id1, Code: "", Title: title1, Version: 1}
 			str, err := services.Updatedl(req)
-			fmt.Println(err.Error())
+			fmt.Println("t7 : "+err.Error())
 			assert.NotNil(t, err)
 			assert.Empty(t, str)
 
@@ -149,7 +149,7 @@ func TestUpdateDl(t *testing.T) {
 		t.Run("should not allow Update with  empty title", func(t *testing.T) {
 			req := dlrequest.DlUpdateRequest{ID: id1, Code: code2, Title: "", Version: 1}
 			str, err := services.Updatedl(req)
-			fmt.Println(err.Error())
+			fmt.Println("t8 : "+err.Error())
 			assert.NotNil(t, err)
 			assert.Empty(t, str)
 
@@ -157,7 +157,7 @@ func TestUpdateDl(t *testing.T) {
 		t.Run("should not  allow Update with duplicate title", func(t *testing.T) {
 			req := dlrequest.DlUpdateRequest{ID: id1, Code: code1, Title: title2, Version: 1}
 			str, err := services.Updatedl(req)
-			fmt.Println(err.Error())
+			fmt.Println("t9 : "+err.Error())
 			assert.NotNil(t, err)
 			assert.Empty(t, str)
 
@@ -167,14 +167,14 @@ func TestUpdateDl(t *testing.T) {
 			code3 := helper.GenerateNumericString()
 			req := dlrequest.DlUpdateRequest{ID: id1, Code: code3, Title: title1, Version: 1}
 			str, err := services.Updatedl(req)
-			fmt.Println(str)
+			fmt.Println("t10 : "+str)
 			assert.Nil(t, err)
 			assert.NotEmpty(t, str)
 
 			title3 := helper.GenerateRandomString()
 			req = dlrequest.DlUpdateRequest{ID: id1, Code: code1, Title: title3, Version: 1}
 			str, err = services.Updatedl(req)
-			fmt.Println(err.Error())
+			fmt.Println("t11 : "+err.Error())
 			assert.NotNil(t, err)
 			assert.Empty(t, str)
 
@@ -188,7 +188,6 @@ func TestDeleteDlWithDetail(t *testing.T) {
 
 	t.Run("DL deleting versions", func(t *testing.T) {
 		t.Run("should not allow delete dl that version isnt match", func(t *testing.T) {
-			fmt.Println("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
 			code1 := helper.GenerateNumericString() + "3"
 			title1 := helper.GenerateRandomString()
 			str1, err1 := services.Insertdl(dlrequest.DlInsertRequest{Code: code1, Title: title1})
@@ -199,7 +198,6 @@ func TestDeleteDlWithDetail(t *testing.T) {
 			str, err := services.Updatedl(req)
 			assert.Nil(t, err, "expected first creation to succeed")
 			assert.NotEmpty(t, str)
-			println(id)
 			req2 := dlrequest.DlDeleteRequest{ID: id, Version: 1}
 			str, err = services.DeleteDLWithVersion(req2)
 			assert.NotNil(t, err, "expected error for mismatche version")

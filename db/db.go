@@ -3,6 +3,7 @@ package db
 import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"log"
 	"time"
 )
@@ -12,11 +13,11 @@ var DB *gorm.DB
 func InitDB() {
 	dsn := "host=localhost user=postgres password=1234 dbname=project port=5432 sslmode=disable"
 	var err error
-	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{Logger: logger.Default.LogMode(logger.Silent),})
 	if err != nil {
 		log.Fatalf("Failed to connect to the database: %v", err)
 	}
-
+  
 	// Configure connection pool settings
 	sqlDB, err := DB.DB()
 	if err != nil {
@@ -28,7 +29,7 @@ func InitDB() {
 	sqlDB.SetConnMaxLifetime(30 * time.Minute) // Connection lifetime
 	sqlDB.SetConnMaxIdleTime(10 * time.Minute) // Idle connection timeout
 
-//log.Println("Connected to the database with GORM connection pooling!")
+
 }
 func GetDB() *gorm.DB {
     return DB

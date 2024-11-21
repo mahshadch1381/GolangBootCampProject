@@ -65,7 +65,7 @@ func TestCreateVoucher(t *testing.T) {
 			assert.NotNil(t, err2, "expected error for empty number")
 			assert.Empty(t, str2)
 		})
-		t.Run("should not allow empty number", func(t *testing.T) {
+		t.Run("should not allow big size(more thann 64) number", func(t *testing.T) {
 			number:=helper.GenerateStringWithBigSize()
 			request2 := vrequest.VoucherInsertRequest{
 				Voucher: vrequest.VoucherInsertion{Number: number},
@@ -82,7 +82,7 @@ func TestCreateVoucher(t *testing.T) {
 				Items:   []vrequest.VoucherItemInsertion{{SLID: id_sl_withoutdl, DLID: nil, Debit: 200, Credit: 0}},
 			}
 			str1, err1 := services.Insertvoucher(request1)
-			fmt.Println(err1.Error())
+			fmt.Println("t27 : "+err1.Error())
 			assert.NotNil(t, err1, "expected error for duplicate number")
 			assert.Empty(t, str1)
 		})
@@ -94,7 +94,7 @@ func TestCreateVoucher(t *testing.T) {
 					{SLID: id_sl_withoutdl, DLID: nil, Debit: 0, Credit: 200}},
 			}
 			str1, err1 := services.Insertvoucher(request1)
-			fmt.Println(err1.Error())
+			fmt.Println("t28 : "+err1.Error())
 			assert.NotNil(t, err1, "expected error for duplicate number")
 			assert.Empty(t, str1)
 		})
@@ -107,7 +107,7 @@ func TestCreateVoucher(t *testing.T) {
 					{SLID: id_sl_withoutdl, DLID: nil, Debit: 0, Credit: 200}},
 			}
 			str1, err1 := services.Insertvoucher(request1)
-			fmt.Println(err1.Error())
+			fmt.Println("t29 : "+err1.Error())
 			assert.NotNil(t, err1, "expected error for duplicate number")
 			assert.Empty(t, str1)
 		})
@@ -122,7 +122,7 @@ func TestCreateVoucher(t *testing.T) {
 					{SLID: id_sl_withoutdl, DLID: nil, Debit: 0, Credit: 200}},
 			}
 			str1, err1 := services.Insertvoucher(request1)
-			fmt.Println(err1.Error())
+			fmt.Println("t30 : "+err1.Error())
 			assert.NotNil(t, err1, "expected error for duplicate number")
 			assert.Empty(t, str1)
 		})
@@ -133,7 +133,7 @@ func TestCreateVoucher(t *testing.T) {
 			_, err3 := services.Insertsl(slrequest.SlInsertRequest{Code: code3, Title: title3, IsDetailable: true})
 			assert.Nil(t, err3)
 			id_sl_dl, err := get.GetIDByCode("sl", code3)
-			//	id_sl_withdl = id_sl_dl
+			id_sl_withdl = id_sl_dl
 			assert.Nil(t, err)
 			request1 := vrequest.VoucherInsertRequest{
 				Voucher: vrequest.VoucherInsertion{Number: "1103"},
@@ -142,7 +142,7 @@ func TestCreateVoucher(t *testing.T) {
 					{SLID: 1, DLID: nil, Debit: 0, Credit: 200}},
 			}
 			str1, err1 := services.Insertvoucher(request1)
-			fmt.Println(err1.Error())
+			fmt.Println("t31 : "+err1.Error())
 			assert.NotNil(t, err1, "expected error for duplicate number")
 			assert.Empty(t, str1)
 		})
@@ -156,7 +156,7 @@ func TestCreateVoucher(t *testing.T) {
 					{SLID: id_sl_withoutdl, DLID: nil, Debit: 0, Credit: 200}},
 			}
 			str1, err1 := services.Insertvoucher(request1)
-			fmt.Println(err1.Error())
+			fmt.Println("t32 : "+err1.Error())
 			assert.NotNil(t, err1, "expected error for duplicate number")
 			assert.Empty(t, str1)
 		})
@@ -178,7 +178,7 @@ func TestCreateVoucher(t *testing.T) {
 					{SLID: id_sl_nodl, DLID: nil, Debit: 0, Credit: 200}},
 			}
 			str1, err1 := services.Insertvoucher(request1)
-			fmt.Println(err1.Error())
+			fmt.Println("t33 : "+err1.Error())
 			assert.NotNil(t, err1, "expected error for duplicate number")
 			assert.Empty(t, str1)
 		
@@ -193,7 +193,7 @@ func TestCreateVoucher(t *testing.T) {
 						{SLID: id_sl_withoutdl, DLID: nil, Debit: 0, Credit: 200}},
 				}
 				str1, err1 := services.Insertvoucher(request1)
-				fmt.Println(err1.Error())
+				fmt.Println("t34 : "+err1.Error())
 				assert.NotNil(t, err1, "expected error for duplicate number")
 				assert.Empty(t, str1)
 			})
@@ -205,14 +205,14 @@ func TestGetVoucher(t *testing.T) {
 	t.Run("Voucher Getting", func(t *testing.T) {
 		t.Run("should not allow get Voucher that doesnt exist", func(t *testing.T) {
 			v, err := services.GetVoucherByID(20000)
-			fmt.Println(err.Error())
+			fmt.Println("t35 : "+err.Error())
 			assert.NotNil(t, err, "expected error for duplicate code")
 			assert.Empty(t, v)
 		})
 
 		t.Run("get Voucher successfully", func(t *testing.T) {
 			v, err := services.GetVoucherByID(1)
-			fmt.Printf("this is Voucher you want: Voucher.Number=%v, Voucher.version=%v, Voucher.items=%v \n", v.Voucher.Number, v.Voucher.Version, v.Items)
+			fmt.Printf("t36 : "+"this is Voucher you want: Voucher.Number=%v, Voucher.version=%v, Voucher.items=%v \n", v.Voucher.Number, v.Voucher.Version, v.Items)
 			assert.Nil(t, err, "expected error for duplicate code")
 			assert.NotEmpty(t, v)
 		})
@@ -225,7 +225,7 @@ func TestDeleteVoucher(t *testing.T) {
 		t.Run("should not allow delete voucher that doesnt exist", func(t *testing.T) {
 			req := vrequest.VoucherDeleteRequest{ID: 20000, Version: 1}
 			str, err := services.DeleteVoucherWithVersion(req)
-			fmt.Println(err.Error())
+			fmt.Println("t37 : "+err.Error())
 			assert.NotNil(t, err, "expected error for not found")
 			assert.Empty(t, str)
 		})
@@ -248,7 +248,7 @@ func TestDeleteVoucher(t *testing.T) {
 			assert.Nil(t, err)
 		    req:=vrequest.VoucherDeleteRequest{ID: id_v,Version :1}
 			str, err := services.DeleteVoucherWithVersion(req)
-			fmt.Println(str)
+			fmt.Println("t38 : "+str)
 			assert.Nil(t, err)
 			assert.NotEmpty(t, str)
 		})
@@ -316,7 +316,7 @@ func TestUpdateVoucher(t *testing.T) {
 				},
 			}
             str,err:=services.UpdateVoucher(&updateRequest)
-			fmt.Println(err.Error())
+			fmt.Println("t39 : "+err.Error())
 			assert.NotNil(t,err)
 			assert.Empty(t,str)
 
@@ -337,7 +337,7 @@ func TestUpdateVoucher(t *testing.T) {
 				},
 			}
             str,err:=services.UpdateVoucher(&updateRequest)
-			fmt.Println(err.Error())
+			fmt.Println("t40 : "+err.Error())
 			assert.NotNil(t,err)
 			assert.Empty(t,str)
 
@@ -359,7 +359,7 @@ func TestUpdateVoucher(t *testing.T) {
 				},
 			}
             str,err:=services.UpdateVoucher(&updateRequest)
-			fmt.Println(err.Error())
+			fmt.Println("t41 : "+err.Error())
 			assert.NotNil(t,err)
 			assert.Empty(t,str)
 
@@ -388,7 +388,7 @@ func TestUpdateVoucher(t *testing.T) {
 				},
 			}
             str,err:=services.UpdateVoucher(&updateRequest)
-			fmt.Println("to  "+err.Error())
+			fmt.Println("t42 : "+err.Error())
 			assert.NotNil(t,err)
 			assert.Empty(t,str)
 
@@ -430,7 +430,7 @@ func TestUpdateVoucher(t *testing.T) {
 				},
 			}
             str,err:=services.UpdateVoucher(&updateRequest)
-			fmt.Println(err.Error())
+			fmt.Println("t43 : "+err.Error())
 			assert.NotNil(t,err)
 			assert.Empty(t,str)
 
@@ -466,7 +466,7 @@ func TestUpdateVoucher(t *testing.T) {
 				},
 			}
             str,err:=services.UpdateVoucher(&updateRequest)
-			fmt.Println(err.Error())
+			fmt.Println("t44 : "+err.Error())
 			assert.NotNil(t,err)
 			assert.Empty(t,str)
 
@@ -501,7 +501,7 @@ func TestUpdateVoucher(t *testing.T) {
 				},
 			}
             str,err:=services.UpdateVoucher(&updateRequest)
-			fmt.Println(err.Error())
+			fmt.Println("t45 : "+err.Error())
 			assert.NotNil(t,err)
 			assert.Empty(t,str)
 
@@ -534,7 +534,7 @@ func TestUpdateVoucher(t *testing.T) {
 				},
 			}
             str,err:=services.UpdateVoucher(&updateRequest)
-			fmt.Println("T2 "+err.Error())
+			fmt.Println("t46 : "+err.Error())
 			assert.NotNil(t,err)
 			assert.Empty(t,str)
 
@@ -567,7 +567,7 @@ func TestUpdateVoucher(t *testing.T) {
 				},
 			}
             str,err:=services.UpdateVoucher(&updateRequest)
-			fmt.Println("T5 "+err.Error())
+			fmt.Println("t47 : "+err.Error())
 			assert.NotNil(t,err)
 			assert.Empty(t,str)
 
@@ -600,7 +600,7 @@ func TestUpdateVoucher(t *testing.T) {
 				},
 			}
             str,err:=services.UpdateVoucher(&updateRequest)
-			fmt.Println("T3 "+err.Error())
+			fmt.Println("t48 : "+err.Error())
 			assert.NotNil(t,err)
 			assert.Empty(t,str)
 
@@ -626,7 +626,7 @@ func TestUpdateVoucher(t *testing.T) {
 				},
 			}
             str,err:=services.UpdateVoucher(&updateRequest)
-			fmt.Println("T1"+err.Error())
+			fmt.Println("t49 : "+err.Error())
 			assert.NotNil(t,err)
 			assert.Empty(t,str)
 
@@ -649,7 +649,7 @@ func TestUpdateVoucher(t *testing.T) {
 				},
 			}
             str,err:=services.UpdateVoucher(&updateRequest4)
-			fmt.Println(str)
+			fmt.Println("t50 : "+str)
 			assert.Nil(t,err)
 			assert.NotEmpty(t,str)
             number5:=helper.GenerateNumericString()+"9"
@@ -668,7 +668,7 @@ func TestUpdateVoucher(t *testing.T) {
 				},
 			}
 			str,err=services.UpdateVoucher(&updateRequest5)
-			fmt.Println(err.Error())
+			fmt.Println("t51 : "+err.Error())
 			assert.NotNil(t,err)
 			assert.Empty(t,str)
 
@@ -731,12 +731,12 @@ func TestDeleteGeneralDetailed(t *testing.T) {
 				},
 			}
             str,err:=services.UpdateVoucher(&updateRequest)
-			fmt.Println(str)
+			fmt.Println("t51 : "+str)
 			assert.Nil(t,err)
 			assert.NotEmpty(t,str)
             req:=vrequest.VoucherDeleteRequest{ID:  id_voucher1,Version :1}
 			str, err = services.DeleteVoucherWithVersion(req)
-			fmt.Println(err.Error())
+			fmt.Println("t52 : "+err.Error())
 			assert.NotNil(t, err)
 			assert.Empty(t, str)
 
@@ -745,21 +745,21 @@ func TestDeleteGeneralDetailed(t *testing.T) {
 		 t.Run("should not allow Delete sl that is refrenced", func(t *testing.T) {
 			req:=slrequest.SlDeleteRequest{ID: id_sl_withdl,Version :1}
 			str, err := services.DeleteSLWithVersion(req)
-			fmt.Println(err.Error())
+			fmt.Println("t53 : "+err.Error())
 			assert.NotNil(t, err)
 			assert.Empty(t, str)
 		 })
 		 t.Run("should not allow update sl that is refrenced", func(t *testing.T) {
 			req:=slrequest.SlUpdateRequest{ID: id_sl_withdl, Code: code2, Title: title2, Version: 1,IsDetailable: true}
             str,err:=services.Updatesl(req)
-			fmt.Println(err.Error())
+			fmt.Println("t54 : "+err.Error())
 			assert.NotNil(t,err)
 			assert.Empty(t,str)
 		 })
 		 t.Run("should not allow Delete dl that is refrenced", func(t *testing.T) {
 			req:=dlrequest.DlDeleteRequest{ID: id_dl,Version :1}
 			str, err := services.DeleteDLWithVersion(req)
-			fmt.Println(err.Error())
+			fmt.Println("t55 : "+err.Error())
 			assert.NotNil(t, err)
 			assert.Empty(t, str)
 		 })
