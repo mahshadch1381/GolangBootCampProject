@@ -2,8 +2,6 @@ package vrequest
 
 import (
 	"errors"
-	"finalproject/db/queries/count"
-	"finalproject/internal/models"
 	"finalproject/internal/validation"
 )
 
@@ -31,32 +29,17 @@ func (r *VoucherInsertRequest) Validate() error {
 	if err := validation.LenghtValidation(&r.Voucher.Number); err != nil {
 		return err
 	}
-	if err := r.NumberDuclicateValidation(); err != nil {
-		return err
-	}
 	if err := r.ValidateCountOfItems(); err != nil {
 		return err
 	}
 	if err := r.ValidateDebitsAndCredits(); err != nil {
 		return err
 	}
+
 	if err := r.ValidateSumOfDebitsAndCredits(); err != nil {
 		return err
 	}
 	return nil
-}
-
-func (r *VoucherInsertRequest) NumberDuclicateValidation() error {
-	var counter int64
-	counter, err := count.CountByNumber(r.Voucher.Number, &models.Voucher{})
-	if err != nil {
-		return err
-	}
-	if counter > 0 {
-		return errors.New("duplicated code")
-	}
-	return nil
-
 }
 
 func (r *VoucherInsertRequest) ValidateCountOfItems() error {
@@ -75,6 +58,9 @@ func (r *VoucherInsertRequest) ValidateDebitsAndCredits() error {
 	for _, item := range r.Items {
 		if !((item.Debit > 0 && item.Credit == 0) || (item.Debit == 0 && item.Credit > 0)) {
 			return errors.New("each item must have either debit or credit greater than 0, and the other 0 ")
+		}
+		if err := CheckRefrences(item.DLID, item.SLID); err != nil {
+			return err
 		}
 	}
 	return nil

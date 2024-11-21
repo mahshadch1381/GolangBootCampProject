@@ -13,7 +13,7 @@ import (
 )
 
 func Insertsl(req slrequest.SlInsertRequest) (string, error) {
-	err := validation.InsertValidatin(&req.Code, &req.Title, &models.SL{})
+	err := validation.SizeValidatin(&req.Code, &req.Title)
 	if err != nil {
 		return "", err
 	}
@@ -21,14 +21,14 @@ func Insertsl(req slrequest.SlInsertRequest) (string, error) {
 	if err := insert.InsertRecord(&sl); err != nil {
 		return "", err
 	}
-	return "save sl with id:", nil
+	return "successful sl insertion request", nil
 
 }
 func Updatesl(req slrequest.SlUpdateRequest) (string, error) {
 	if err := req.Validate(); err != nil {
 		return "", err
 	}
-	err := validation.UpdateValidatin(&req.Code, &req.Title, &req.ID, &models.SL{})
+	err := validation.SizeValidatin(&req.Code, &req.Title)
 	if err != nil {
 		return "", err
 	}
@@ -36,11 +36,14 @@ func Updatesl(req slrequest.SlUpdateRequest) (string, error) {
 	if err := get.GetRecordByID(req.ID, &existingsl); err != nil {
 		return "", err
 	}
+	if existingsl.Version != req.Version {
+		return "",errors.New("version mismatch: record has been updated by another transaction")
+	}
 	existingsl = *mapper.SlMapperUpdate(&req, &existingsl)
 	if err := update.Update(existingsl); err != nil {
-		return "cant to update sl  bcz :", err
+		return "", err
 	}
-	return "update sl with id:", nil
+	return "successful sl update request", nil
 
 }
 func GetSLByID(id uint) (*models.SL, error) {
@@ -50,20 +53,18 @@ func GetSLByID(id uint) (*models.SL, error) {
 	}
 	return &sl, nil
 }
-func DeleteSLWithVersion(req slrequest.SlDeleteRequest) error {
-	if err := req.Validate(); err != nil {
-		return err
-	}
+func DeleteSLWithVersion(req slrequest.SlDeleteRequest) (string,error) {
+
 	var existingsl models.SL
 	if err := get.GetRecordByID(req.ID, &existingsl); err != nil {
-		return err
+		return "",err
 	}
 	if existingsl.Version != req.Version {
-		return errors.New("version mismatch: cannot delete, record has been modified by another transaction")
+		return "",errors.New("version mismatch: cannot delete, record has been modified by another transaction")
 	}
 	if err := delete.DeleteRecord[models.SL](existingsl.ID); err != nil {
-		return err
+		return "",err
 	}
-	println("Record deleted successfully from sl table")
-	return nil
+	
+	return "successful sl recored delete request",nil
 }

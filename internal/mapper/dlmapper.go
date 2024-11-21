@@ -18,6 +18,6 @@ func DlMapperUpdate(req *dlrequest.DlUpdateRequest,existingdl *models.DL) *model
 	existingdl.Code=req.Code
 	existingdl.ID=req.ID
 	existingdl.Title=req.Title
-	
+	existingdl.Version=req.Version+1
 	return existingdl
 }

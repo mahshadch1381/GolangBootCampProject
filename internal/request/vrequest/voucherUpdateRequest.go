@@ -32,49 +32,31 @@ type VoucherUpdateRequest struct {
 
 
 
-func (r *VoucherUpdateRequest) Validate() error {
-	if err := r.ExistnceOfVoucher(); err != nil {
-		return err
+func (r *VoucherUpdateRequest) Validate() ( *models.Voucher,error) {
+	voucher ,err1:=r.ExistnceOfVoucher()
+	if err1 != nil {
+		return nil,err1
 	}
 	if err := validation.LenghtValidation(&r.Voucher.Number); err != nil {
-		return err
+		return nil,err
 	}
-	fmt.Printf("v1")
-	if err := r.NumberDuclicateValidationUpdate(); err != nil {
-		return err
-	}
-	fmt.Printf("v2")
 	if err := r.ValidateCountOfItems(); err != nil {
-		return err
+		return nil,err
 	}
-	fmt.Printf("v3")
 	if err := r.ValidateDebitsAndCredits(); err != nil {
-		return err
+		return nil,err
 	}
-	fmt.Printf("v4")
-	return nil
+	return voucher,nil
 }
 
-func (r *VoucherUpdateRequest) ExistnceOfVoucher() error {
+func (r *VoucherUpdateRequest) ExistnceOfVoucher() ( *models.Voucher,error) {
 	var voucher models.Voucher
 	if err := get.GetRecordByID(r.Voucher.ID, &voucher); err != nil {
-		return err
+		str:=err.Error()
+		str = "cant find voucher that you want to update :" +str
+		return nil,errors.New(str)
 	}
-	return nil
-}
-
-
-func (r *VoucherUpdateRequest) NumberDuclicateValidationUpdate() error {
-	var counter int64
-	counter, err := count.CountByNumberExcludingID(r.Voucher.Number, r.Voucher.ID, &models.Voucher{})
-	if err != nil {
-		return err
-	}
-	if counter > 0 {
-		return errors.New("duplicated code")
-	}
-	return nil
-
+	return &voucher,nil
 }
 func (r *VoucherUpdateRequest) ValidateCountOfItems() error {
 	if len(r.Items.Inserted) == 0 && len(r.Items.Deleted) == 0 {
@@ -126,13 +108,15 @@ func (r *VoucherUpdateRequest) ValidateItemsOfUpdated(debits *int,credits *int) 
 }
 
 func CheckRefrences(dl_id *uint, sl_id uint) error {
-	fmt.Printf("v5")
 	if sl_id == 0 {
-		return errors.New("   SL field in voucher items should not be empty")
+		return errors.New("SL field in voucher items should not be empty")
 	}
 	var sl models.SL
 	if err := get.GetRecordByID(sl_id, &sl); err != nil {
-		return err
+		str:=err.Error()
+		str = "cant find refrenced Sl :" +str
+		return errors.New(str)
+		
 	}
 	if !sl.IsDetailable {
 		if dl_id != nil {
@@ -144,7 +128,9 @@ func CheckRefrences(dl_id *uint, sl_id uint) error {
 		}
 		var dl models.DL
 		if err := get.GetRecordByID(*dl_id, &dl); err != nil {
-			return err
+			str:=err.Error()
+			str = "cant find refrenced dl :" +str
+			return errors.New(str)
 		}
 	}
 	return nil

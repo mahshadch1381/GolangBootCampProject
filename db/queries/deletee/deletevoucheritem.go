@@ -8,9 +8,9 @@ import (
 
 
 func DeleteVoucherItemsByVoucherID(voucherID uint) error {
-	db.ConnectWithGORM()
+	db := db.GetDB() 
 	// Delete all VoucherItems with the given voucher_id
-	if result := db.DB.Where("voucher_id = ?", voucherID).Delete(&models.VoucherItem{}); result.Error != nil {
+	if result := db.Where("voucher_id = ?", voucherID).Delete(&models.VoucherItem{}); result.Error != nil {
 		return errors.New("failed to delete voucher items")
 	} else {
 		if result.RowsAffected == 0 {
@@ -20,9 +20,9 @@ func DeleteVoucherItemsByVoucherID(voucherID uint) error {
 	return nil
 }
 func DeleteVoucherItemsByIdAndVoucherID(voucherID uint,id uint) error {
-	db.ConnectWithGORM()
+	db := db.GetDB() 
 	// Delete all VoucherItems with the given voucher_id
-	if result := db.DB.Where("voucher_id = ? AND id = ?", voucherID,id).Delete(&models.VoucherItem{}); result.Error != nil {
+	if result := db.Where("voucher_id = ? AND id = ?", voucherID,id).Delete(&models.VoucherItem{}); result.Error != nil {
 		return errors.New("failed to delete voucher items")
 	} else {
 		if result.RowsAffected == 0 {

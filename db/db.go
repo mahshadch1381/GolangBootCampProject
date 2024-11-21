@@ -9,7 +9,7 @@ import (
 
 var DB *gorm.DB
 
-func ConnectWithGORM() {
+func InitDB() {
 	dsn := "host=localhost user=postgres password=1234 dbname=project port=5432 sslmode=disable"
 	var err error
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
@@ -29,4 +29,7 @@ func ConnectWithGORM() {
 	sqlDB.SetConnMaxIdleTime(10 * time.Minute) // Idle connection timeout
 
 //log.Println("Connected to the database with GORM connection pooling!")
+}
+func GetDB() *gorm.DB {
+    return DB
 }

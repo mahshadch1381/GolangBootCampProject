@@ -10,7 +10,7 @@ import (
 	"finalproject/internal/mapper"
 	"finalproject/internal/models"
 	"finalproject/internal/request/vrequest"
-	"fmt"
+	
 )
 
 func Insertvoucher(req vrequest.VoucherInsertRequest) (string, error) {
@@ -25,7 +25,7 @@ func Insertvoucher(req vrequest.VoucherInsertRequest) (string, error) {
 	if err := insertvoucherItem(&req.Items, voucher.ID); err != nil {
 		return "", err
 	}
-	return "save voucher with id:", nil
+	return "successful voucher insertion request", nil
 
 }
 func insertvoucherItem(req *[]vrequest.VoucherItemInsertion, voucherid uint) error {
@@ -36,30 +36,30 @@ func insertvoucherItem(req *[]vrequest.VoucherItemInsertion, voucherid uint) err
 			return err
 		}
 	}
-	fmt.Printf("correct 2 %v \n", req)
+	
 	return nil
 
 }
 
-func UpdateVoucher(r *vrequest.VoucherUpdateRequest) error {
-	if err := r.Validate(); err != nil {
-		return err
+func UpdateVoucher(r *vrequest.VoucherUpdateRequest) (string,error) {
+    existingvoucher,err:=r.Validate()
+	if err!=nil{
+		return "",err
 	}
-	var existingvoucher models.Voucher
-	if err := get.GetRecordByID(r.Voucher.ID, &existingvoucher); err != nil {
-		return err
+	if existingvoucher.Version != r.Voucher.Version {
+		return "",errors.New("version mismatch: record has been updated by another transaction")
 	}
-	existingvoucher.Number = r.Voucher.Number // its short no need to mapper
-	if err := update.Update(existingvoucher); err != nil {
-		return err
+	existingvoucher2 := *mapper.VoucherMapperUpdate(r,existingvoucher)
+
+	if err := update.Update(existingvoucher2); err != nil {
+		return "",err
 	}
 	if err := updateVoucherItem(r); err != nil {
-		return err
+		return "",err
 	}
-	return nil
+	return "successful voucher update request",nil
 }
 func updateVoucherItem(r *vrequest.VoucherUpdateRequest) error {
-	fmt.Printf("correct 1 %v \n", r)
 	if err := insertvoucherItem(&r.Items.Inserted, r.Voucher.ID); err != nil {
 		return err
 	}
@@ -69,7 +69,6 @@ func updateVoucherItem(r *vrequest.VoucherUpdateRequest) error {
 	if err:=deleteVoucherItem(r);err!=nil{
 		return err
 	}
-	fmt.Printf("correct 4 %v \n", r)
 	return nil
 
 }
@@ -100,22 +99,22 @@ func GetVoucherByID(id uint) (*dto.Voucherdto, error) {
 	return &result, nil
 }
 
-func DeleteVoucher(req vrequest.VoucherDeleteRequest) error {
+func DeleteVoucherWithVersion(req vrequest.VoucherDeleteRequest) (string,error) {
 	var existingvoucher models.Voucher
 	if err := get.GetRecordByID(req.ID, &existingvoucher); err != nil {
-		return err
+		return "",err
 	}
 	if existingvoucher.Version != req.Version {
-		return errors.New("version mismatch: cannot delete, record has been modified by another transaction")
+		return "",errors.New("version mismatch: cannot delete, record has been modified by another transaction")
 	}
 	if err := delete.DeleteVoucherItemsByVoucherID(req.ID); err != nil {
-		return err
+		return "",err
 	}
 	if err := delete.DeleteRecord[models.Voucher](req.ID); err != nil {
-		return err
+		return "",err
 	}
-	println("Record deleted successfully")
-	return nil
+	
+	return "successful voucher record delete request",nil
 }
 func deleteVoucherItem(r *vrequest.VoucherUpdateRequest) error {
 	for _, item := range r.Items.Deleted {
@@ -123,6 +122,6 @@ func deleteVoucherItem(r *vrequest.VoucherUpdateRequest) error {
 			return err
 		}
 	}
-	println("Record deleted successfully")
+
 	return nil
 }

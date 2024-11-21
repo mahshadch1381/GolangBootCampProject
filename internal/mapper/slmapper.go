@@ -20,6 +20,6 @@ func SlMapperUpdate(req *slrequest.SlUpdateRequest, existingsl *models.SL) *mode
 	existingsl.ID = req.ID
 	existingsl.Title = req.Title
 	existingsl.IsDetailable = req.IsDetailable
-
+	existingsl.Version=req.Version+1
 	return existingsl
 }

@@ -12,4 +12,9 @@ func VoucherMapper(req *vrequest.VoucherInsertRequest) *models.Voucher {
 	}
 	return voucher
 }
+func VoucherMapperUpdate(req *vrequest.VoucherUpdateRequest, existingv *models.Voucher) *models.Voucher {
 
+	existingv.Number = req.Voucher.Number
+	existingv.Version=req.Voucher.Version+1
+	return existingv
+}

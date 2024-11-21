@@ -2,21 +2,26 @@ package insert
 
 import (
 	"errors"
-    "finalproject/db"
+	"finalproject/db"
+	"strings"
+
 	"gorm.io/gorm"
 )
 
 func InsertRecord[T any](record T) error {
-	db.ConnectWithGORM()
-	result := db.DB.Create(&record)
+	db := db.GetDB()
+	result := db.Create(&record)
 	if result.Error != nil {
-		if errors.Is(result.Error,gorm.ErrCheckConstraintViolated){
-			return errors.New("ErrCheckConstraintViolated error")
+		if errors.Is(result.Error, gorm.ErrDuplicatedKey) {
+			return errors.New("cant to insert to database : we have duplicate value in table ")
 		}
-		if errors.Is(result.Error,gorm.ErrEmptySlice){
-			return errors.New("ErrEmptySlice error")
+		if errors.Is(result.Error, gorm.ErrDuplicatedKey) || strings.Contains(result.Error.Error(), "duplicate key") {
+			return errors.New("cant to insert to database: have duplicate code value ")
 		}
-		return errors.New("cant to insert to database ")
+		if result.Error == gorm.ErrForeignKeyViolated || strings.Contains(result.Error.Error(), "violates foreign key constraint") {
+			return errors.New("item you want to insert, as refrensed , not exist")
+		}
+		return result.Error
 	}
 	return nil
 }
