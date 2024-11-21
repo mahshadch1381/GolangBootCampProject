@@ -97,21 +97,6 @@ func TestDeleteDl(t *testing.T) {
 			assert.NotNil(t, err, "expected error for not found")
 			assert.Empty(t, str)
 		})
-		// t.Run("should not allow delete dl that version isnt match", func(t *testing.T) {
-		//     req:=dlrequest.DlDeleteRequest{ID: 23,Version :3}
-		// 	str, err := services.DeleteDLWithVersion(req)
-		// 	fmt.Println(err.Error())
-		// 	assert.NotNil(t, err, "expected error for mismatche version")
-		// 	assert.Empty(t, str)
-		// })
-		// t.Run("should not allow delete dl that is refrenced", func(t *testing.T) {
-		//     req:=dlrequest.DlDeleteRequest{ID: 1,Version :3}
-		// 	str, err := services.DeleteDLWithVersion(req)
-		// 	fmt.Println(err.Error())
-		// 	assert.NotNil(t, err, "expected error for deleting refrenced item")
-		// 	assert.Empty(t, str)
-		// })
-
 		t.Run("delete dl successfully", func(t *testing.T) {
 			code1 := helper.GenerateNumericString()
 			title1 := helper.GenerateRandomString()
